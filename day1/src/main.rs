@@ -35,12 +35,12 @@ fn run_compute(input: &str) {
 }
 
 fn compute(input: &str) -> Result<u32, String> {
-    let len = input.len();
+    let chars: Vec<char> = input.chars().collect();
+
+    let len = chars.len();
     if 0 != len % 2 {
         return Err(format!("input has odd number of characters: {}", len))
     }
-
-    let chars: Vec<char> = input.chars().collect();
 
     let mut sum = 0;
     for pos in 0..len {

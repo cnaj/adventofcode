@@ -35,21 +35,18 @@ fn run_compute(input: &str) {
 }
 
 fn compute(input: &str) -> Result<u32, String> {
-    let chars: Vec<char> = input.chars().collect();
+    // operating on bytes because we need digits '0'..'9' only
 
-    let len = chars.len();
-    if 0 != len % 2 {
-        return Err(format!("input has odd number of characters: {}", len))
-    }
+    let len = input.len();
 
-    let mut next_it = chars.iter().enumerate().cycle().skip(len / 2);
-
+    let mut next_it = input.bytes().enumerate().cycle().skip(len / 2);
     let mut sum = 0;
-    for (pos, &ch) in chars.iter().enumerate() {
-        let cur = to_digit(ch, pos)?;
 
-        let (pos_next, &ch_next) = next_it.next().unwrap();
-        let next = to_digit(ch_next, pos_next)?;
+    for (pos, b) in input.bytes().enumerate() {
+        let cur = to_digit(b, pos)?;
+
+        let (pos_next, b_next) = next_it.next().unwrap();
+        let next = to_digit(b_next, pos_next)?;
 
         if cur == next {
             sum += cur;
@@ -58,11 +55,11 @@ fn compute(input: &str) -> Result<u32, String> {
     Ok(sum)
 }
 
-fn to_digit(ch: char, pos: usize) -> Result<u32, String> {
-    match ch.to_digit(10) {
-        Some(digit) => Ok(digit),
-        None => return Err(format!("unexpected input at character position {}", pos)),
+fn to_digit(b: u8, pos: usize) -> Result<u32, String> {
+    if b < b'0' || b > b'9' {
+        return Err(format!("unexpected input at character position {}", pos));
     }
+    Ok((b - b'0') as u32)
 }
 
 #[cfg(test)]
@@ -96,7 +93,6 @@ mod tests {
 
     #[test]
     fn illegal_input() {
-        assert!(compute("12345").is_err());
         assert!(compute("x1234").is_err());
         assert!(compute("Hello").is_err());
         assert!(compute("1234foo").is_err());

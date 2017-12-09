@@ -1,4 +1,3 @@
-use std::cmp;
 use std::fmt::Display;
 use std::io;
 use std::io::BufRead;
@@ -31,26 +30,44 @@ fn compute<'a, I, T, E>(input: I) -> Result<i32, String>
             Err(err) => return Err(format!("Error while reading line: {}", err)),
         };
 
-        let mut bounds = Option::None;
+        let values: Vec<i32> = values_from_line(line.deref())?;
 
-        for cell in line.split_whitespace() {
-            match i32::from_str_radix(cell, 10) {
-                Ok(value) => {
-                    bounds = match bounds {
-                        Some((min, max)) => Some((cmp::min(min, value),
-                                                  cmp::max(max, value))),
-                        None => Some((value, value)),
-                    };
-                },
-                Err(_) => return Err(format!("Not a number: {}", cell)),
-            };
-        }
-
-        if let Some((min, max)) = bounds {
-            sum += max - min;
+        if let Some(line_result) = first_divisible_result(&values) {
+            sum += line_result;
         }
     }
     Ok(sum)
+}
+
+fn values_from_line(line: &str) -> Result<Vec<i32>, String> {
+    let mut values: Vec<i32> = vec![];
+    for cell in line.split_whitespace() {
+        match i32::from_str_radix(cell, 10) {
+            Ok(value) => values.push(value),
+            Err(_) => return Err(format!("Not a number: {}", cell)),
+        };
+    }
+    Ok(values)
+}
+
+fn first_divisible_result<T: Deref<Target = [i32]>>(values: &T) -> Option<i32> {
+    let mut it_i = values.iter();
+    while let Some(i) = it_i.next() {
+
+        let mut it_j = it_i.clone();
+        while let Some(j) = it_j.next() {
+            let (i, j) = if i < j {
+                (i, j)
+            } else {
+                (j, i)
+            };
+
+            if j % i == 0 {
+                return Some(j / i)
+            }
+        }
+    }
+    None
 }
 
 #[cfg(test)]
@@ -59,10 +76,10 @@ mod tests {
 
     #[test]
     fn it_works_1() {
-        let input = "5  1  9  5\n\
-                           7  5  3   \n\
-                           2  4  6  8";
-        assert_eq!(Ok(18), compute(input.lines().map(|line| wrap(line))));
+        let input = "5  9  2  8\n\
+                           9  4  7  3\n\
+                           3  8  6  5";
+        assert_eq!(Ok(9), compute(input.lines().map(|line| wrap(line))));
     }
 
     fn wrap(input: &str) -> Result<&str, String> {

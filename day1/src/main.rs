@@ -42,11 +42,15 @@ fn compute(input: &str) -> Result<u32, String> {
         return Err(format!("input has odd number of characters: {}", len))
     }
 
+    let mut next_it = chars.iter().enumerate().cycle().skip(len / 2);
+
     let mut sum = 0;
-    for pos in 0..len {
-        let cur = to_digit(chars[pos], pos)?;
-        let next_pos = (pos + len / 2) % len;
-        let next = to_digit(chars[next_pos], next_pos)?;
+    for (pos, &ch) in chars.iter().enumerate() {
+        let cur = to_digit(ch, pos)?;
+
+        let (pos_next, &ch_next) = next_it.next().unwrap();
+        let next = to_digit(ch_next, pos_next)?;
+
         if cur == next {
             sum += cur;
         }
@@ -57,7 +61,7 @@ fn compute(input: &str) -> Result<u32, String> {
 fn to_digit(ch: char, pos: usize) -> Result<u32, String> {
     match ch.to_digit(10) {
         Some(digit) => Ok(digit),
-        None => return Err(format!("unexpected input at position {}", pos)),
+        None => return Err(format!("unexpected input at character position {}", pos)),
     }
 }
 

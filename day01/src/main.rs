@@ -29,7 +29,7 @@ fn main() {
 fn run_compute(input: &str) {
     let result = compute(&input);
     match result {
-        Ok(result) => println!("{:?}", result),
+        Ok(result) => println!("{}", result),
         Err(err) => eprintln!("Error: {}", err),
     }
 }

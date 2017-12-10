@@ -1,6 +1,52 @@
-pub fn compute(n: u32) -> i32 {
-    let (x, y) = find_grid_pos(n);
-    x.abs() + y.abs()
+/// Computes the value of the element in the given position.
+///
+/// # Examples
+///
+/// ```
+/// use day03::compute;
+///
+/// assert_eq!(  1, compute(0));
+/// assert_eq!(  2, compute(1));
+/// assert_eq!(  4, compute(3));
+/// assert_eq!(  5, compute(4));
+/// assert_eq!( 10, compute(5));
+/// assert_eq!( 23, compute(12));
+/// assert_eq!(351, compute(330));
+/// ```
+pub fn compute(value: u32) -> u32 {
+    let mut store: Vec<u32> = vec![];
+    store.push(1);
+
+    let mut n: u32 = 1;
+    loop {
+        let last = store[(n - 1) as usize];
+        if last > value {
+            return last;
+        }
+
+        n += 1;
+        let (x, y) = find_grid_pos(n);
+
+        let mut sum: u32 = 0;
+        sum += value_if_n_smaller(&store, n, x - 1, y - 1);
+        sum += value_if_n_smaller(&store, n, x - 1, y + 0);
+        sum += value_if_n_smaller(&store, n, x - 1, y + 1);
+        sum += value_if_n_smaller(&store, n, x + 0, y - 1);
+        sum += value_if_n_smaller(&store, n, x + 0, y + 1);
+        sum += value_if_n_smaller(&store, n, x + 1, y - 1);
+        sum += value_if_n_smaller(&store, n, x + 1, y + 0);
+        sum += value_if_n_smaller(&store, n, x + 1, y + 1);
+        store.push(sum);
+    }
+}
+
+fn value_if_n_smaller(store: &Vec<u32>, n: u32, x: i32, y: i32) -> u32 {
+    let other_n = find_n(x, y);
+    if other_n < n {
+        store[(other_n - 1) as usize]
+    } else {
+        0
+    }
 }
 
 /// Returns the element number of the given position, starting with 1 at (0, 0).
@@ -123,26 +169,6 @@ pub fn lower_right(ring_nr: u32) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn it_works_1() {
-        assert_eq!(0, compute(1));
-    }
-
-    #[test]
-    fn it_works_2() {
-        assert_eq!(3, compute(12));
-    }
-
-    #[test]
-    fn it_works_3() {
-        assert_eq!(2, compute(23));
-    }
-
-    #[test]
-    fn it_works_4() {
-        assert_eq!(31, compute(1024));
-    }
 
     #[test]
     fn test_find_ring_nr() {

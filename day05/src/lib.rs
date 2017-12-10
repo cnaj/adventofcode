@@ -10,7 +10,11 @@ pub fn execute(list: &mut [i32]) -> usize {
         match cur {
             Some(cur) => {
                 ip += *cur;
-                *cur += 1;
+                if *cur >= 3 {
+                    *cur -= 1;
+                } else {
+                    *cur += 1;
+                }
                 count += 1;
             },
             None => return count,
@@ -25,6 +29,6 @@ mod tests {
     #[test]
     fn it_works() {
         let mut list = [0, 3, 0, 1, -3];
-        assert_eq!(5, execute(&mut list));
+        assert_eq!(10, execute(&mut list));
     }
 }

@@ -1,12 +1,12 @@
-use std::collections::hash_set::HashSet;
+use std::collections::HashMap;
 
 pub fn reallocate(banks: &mut [u32]) -> usize {
-    let mut configs = HashSet::new();
+    let mut configs = HashMap::new();
 
     let mut count: usize = 0;
     loop {
-        if !configs.insert(banks.to_vec()) {
-            return count;
+        if let Some(first_count) = configs.insert(banks.to_vec(), count) {
+            return count - first_count;
         }
         count += 1;
 
@@ -33,6 +33,6 @@ mod tests {
     #[test]
     fn it_works() {
         let mut banks = [0u32, 2, 7, 0];
-        assert_eq!(5, reallocate(&mut banks));
+        assert_eq!(4, reallocate(&mut banks));
     }
 }

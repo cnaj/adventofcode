@@ -4,15 +4,16 @@ use std::io;
 use std::io::BufRead;
 
 use day07::ProgramAnalyzer;
+use day07::BalanceResult::*;
 
 fn main() {
     let stdin = io::stdin();
     let handle = stdin.lock();
 
     match compute(handle) {
-        Ok(bottom) => {
-            if let Some(bottom) = bottom {
-                println!("Bottom program: {}", bottom);
+        Ok(result) => {
+            if let Some((name, weight)) = result {
+                println!("New weight for {}: {}", name, weight);
             }
         },
         Err(err) => {
@@ -21,7 +22,7 @@ fn main() {
     }
 }
 
-fn compute(handle: io::StdinLock) -> Result<Option<String>, String> {
+fn compute(handle: io::StdinLock) -> Result<Option<(String, usize)>, String> {
     let mut analyzer = ProgramAnalyzer::new();
 
     let lines = handle.lines();
@@ -33,7 +34,12 @@ fn compute(handle: io::StdinLock) -> Result<Option<String>, String> {
     }
 
     let result =
-        analyzer.find_bottom()
-            .map(|s| s.to_string());
+        analyzer.balance()
+            .and_then(|result| {
+                match result {
+                    Balanced(_) => None,
+                    Unbalanced(n, w) => Some((n.to_string(), w)),
+                }
+            });
     Ok(result)
 }

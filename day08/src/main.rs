@@ -32,5 +32,5 @@ fn compute(handle: io::StdinLock) -> Result<Option<i32>, String> {
         };
     }
 
-    Ok(executor.get_largest_register_value())
+    Ok(executor.get_max_value())
 }

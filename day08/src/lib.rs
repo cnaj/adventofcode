@@ -9,6 +9,7 @@ use regex::Regex;
 
 pub struct ProgramExecutor {
     registers: HashMap<String, i32>,
+    max_value: Option<i32>,
 }
 
 impl ProgramExecutor {
@@ -16,6 +17,7 @@ impl ProgramExecutor {
     pub fn new() -> ProgramExecutor {
         ProgramExecutor {
             registers: HashMap::new(),
+            max_value: None,
         }
     }
 
@@ -46,6 +48,10 @@ impl ProgramExecutor {
             .map(|i| *i)
     }
 
+    pub fn get_max_value(&self) -> Option<i32> {
+        self.max_value
+    }
+
     fn test(&mut self, reg: &str, cond: &str, value: i32) -> bool {
         let reg_value = *self.registers.get(reg).unwrap_or(&0);
         match cond {
@@ -67,6 +73,12 @@ impl ProgramExecutor {
             _ => panic!("unexpected instruction {}", op),
         };
         self.registers.insert(reg.to_owned(), new_value);
+
+        let max = match self.max_value {
+            Some(v) => v.max(new_value),
+            None => new_value,
+        };
+        self.max_value = Some(max);
     }
 }
 
@@ -87,6 +99,6 @@ mod tests {
         lines.iter()
             .for_each(|line| executor.add_instruction(&line).unwrap());
 
-        assert_eq!(Some(1), executor.get_largest_register_value());
+        assert_eq!(Some(10), executor.get_max_value());
     }
 }

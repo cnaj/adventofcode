@@ -12,7 +12,7 @@ fn main() {
     match compute(handle) {
         Ok(bottom) => {
             if let Some(bottom) = bottom {
-                println!("Bottom program is \"{}\"", bottom);
+                println!("Bottom program: {}", bottom);
             }
         },
         Err(err) => {
@@ -27,7 +27,7 @@ fn compute(handle: io::StdinLock) -> Result<Option<String>, String> {
     let lines = handle.lines();
     for line_result in lines {
         match line_result {
-            Ok(line) => analyzer.add_line(line)?,
+            Ok(line) => analyzer.add_line(&line)?,
             Err(err) => return Err(format!("Could not read line: {}", err)),
         }
     }

@@ -26,5 +26,5 @@ fn main() {
         };
     }
 
-    println!("{}", analyzer.get_score());
+    println!("{}", analyzer.count_garbage());
 }

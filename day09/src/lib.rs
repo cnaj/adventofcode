@@ -14,10 +14,18 @@ pub fn get_score(input: &str) -> usize {
     analyzer.get_score()
 }
 
+pub fn count_garbage(input: &str) -> usize {
+    let mut analyzer = StreamAnalyzer::new();
+    input.chars()
+        .for_each(|ch| analyzer.next_char(ch));
+    analyzer.count_garbage()
+}
+
 pub struct StreamAnalyzer {
     state: State,
     level: usize,
     score: usize,
+    garbage_count: usize,
 }
 
 impl StreamAnalyzer {
@@ -26,6 +34,7 @@ impl StreamAnalyzer {
             state: Start,
             level: 0,
             score: 0,
+            garbage_count: 0,
         }
     }
 
@@ -76,7 +85,9 @@ impl StreamAnalyzer {
                     '!' => {
                         self.state = Escape;
                     },
-                    _ => (),
+                    _ => {
+                        self.garbage_count += 1;
+                    },
                 };
             },
 
@@ -89,6 +100,10 @@ impl StreamAnalyzer {
     pub fn get_score(&self) -> usize {
         self.score
     }
+
+    pub fn count_garbage(&self) -> usize {
+        self.garbage_count
+    }
 }
 
 #[cfg(test)]
@@ -96,7 +111,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn test_get_score() {
         assert_eq!(1, get_score("{}"));
         assert_eq!(6, get_score("{{{}}}"));
         assert_eq!(5, get_score("{{},{}}"));
@@ -105,5 +120,16 @@ mod tests {
         assert_eq!(9, get_score("{{<ab>},{<ab>},{<ab>},{<ab>}}"));
         assert_eq!(9, get_score("{{<!!>},{<!!>},{<!!>},{<!!>}}"));
         assert_eq!(3, get_score("{{<a!>},{<a!>},{<a!>},{<ab>}}"));
+    }
+
+    #[test]
+    fn test_count_garbage() {
+        assert_eq!(0, count_garbage("<>"));
+        assert_eq!(17, count_garbage("<random characters>"));
+        assert_eq!(3, count_garbage("<<<<>"));
+        assert_eq!(2, count_garbage("<{!>}>"));
+        assert_eq!(0, count_garbage("<!!>"));
+        assert_eq!(0, count_garbage("<!!!>>"));
+        assert_eq!(10, count_garbage(r#"<{o"i!a,<{i<a>"#));
     }
 }

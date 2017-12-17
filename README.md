@@ -47,3 +47,7 @@ Some key points for me to look up how I solved things, and where I used certain 
 - `Optional.and_then()`
 - the insight that string interning is not that easy
   - had a look at [string-cache](https://github.com/servo/string-cache)
+
+### Day 9
+
+- simple pattern matching state machine

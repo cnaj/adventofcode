@@ -51,3 +51,8 @@ Some key points for me to look up how I solved things, and where I used certain 
 ### Day 9
 
 - simple pattern matching state machine
+
+### Day 10
+
+- bit operations
+- `impl fmt::Display` :bulb:

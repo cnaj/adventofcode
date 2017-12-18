@@ -11,7 +11,7 @@ pub fn hash(input: &[u8]) -> String {
 }
 
 pub struct KnotHash {
-    hash: [u8; 16],
+    pub hash: [u8; 16],
 }
 
 impl KnotHash {
@@ -43,10 +43,7 @@ impl KnotHash {
                     let mut r: usize = (pos + len - 1) & 0xff;
 
                     for _ in 0usize..len / 2 {
-                        let tmp: u8 = list[l];
-                        list[l] = list[r];
-                        list[r] = tmp;
-
+                        list.swap(l, r);
                         l = (l + 1) & 0xff;
                         r = (r + 0xff) & 0xff;
                     }
